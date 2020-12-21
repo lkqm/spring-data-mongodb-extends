@@ -4,7 +4,6 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 
@@ -26,12 +25,19 @@ public interface MongoRepositoryPlus<T, ID> extends MongoRepository<T, ID> {
      */
     <S extends T> void update(Query query, S entity);
 
-    void update(Query query, Update update);
-
+    /**
+     * Returns number of entities with query.
+     */
     long count(Query query);
 
+    /**
+     * Retrieves entities with query.
+     */
     List<T> findAll(Query query);
 
+    /**
+     * Retrieves entities with query.
+     */
     Page<T> findAll(Query query, Pageable pageable);
 
 }

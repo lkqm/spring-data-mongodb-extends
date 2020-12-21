@@ -15,6 +15,13 @@ public interface BaseService<T, ID> {
     <S extends T> S save(S entity);
 
     /**
+     * Updates the entity ignore null value fields by its id.
+     * <p>
+     * Notes: entity id value must not be null.
+     */
+    <S extends T> void update(S entity);
+
+    /**
      * Deletes the entity with the give id.
      */
     long deleteById(ID id);

@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.github.lkqm.spring.mongodb.integration.AdminUser;
 import com.github.lkqm.spring.mongodb.integration.User;
 import com.github.lkqm.spring.mongodb.integration.UserServiceImpl;
 import java.util.Collections;
@@ -54,6 +55,33 @@ class BaseServiceImplTest {
 
     private User getLastUserFromDb(String id) {
         return mongoTemplate.findOne(Query.query(Criteria.where("_id").is(id)), User.class);
+    }
+
+    @Test
+    void update() {
+        User updateUser = new User();
+        updateUser.setId(user.getId());
+        updateUser.setName("Mario");
+        userService.update(updateUser);
+        User lastUser = getLastUserFromDb(user.getId());
+        assertEquals("Mario", lastUser.getName(), "名字应该被更新");
+        assertEquals(18, lastUser.getAge(), "年龄不应该被更新");
+    }
+
+    @Test
+    void updateSubclass() {
+        // 初始数据
+        AdminUser user = new AdminUser(null, "Jackson", 18, "operator,manager");
+        mongoTemplate.save(user);
+        String id = user.getId();
+
+        // 部分更新
+        userService.update(new AdminUser(id, null, 19, "operator"));
+        AdminUser lastUser = mongoTemplate.findOne(Query.query(Criteria.where("_id").is(id)), AdminUser.class);
+        assertNotNull(lastUser, "数据应该存在");
+        assertEquals(19, lastUser.getAge(), "年龄应该被更新");
+        assertEquals("operator", lastUser.getRole(), "角色应该被更新");
+        assertEquals("Jackson", lastUser.getName(), "姓名不应该更新");
     }
 
     @Test

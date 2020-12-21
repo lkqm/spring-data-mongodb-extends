@@ -6,8 +6,11 @@ import java.util.Collection;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.mapping.MongoPersistentEntity;
+import org.springframework.data.mongodb.core.mapping.MongoPersistentProperty;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.util.Assert;
 
 public class BaseServiceImpl<T, ID> implements BaseService<T, ID> {
@@ -35,6 +38,19 @@ public class BaseServiceImpl<T, ID> implements BaseService<T, ID> {
     public <S extends T> S save(S entity) {
         Assert.notNull(entity, "Entity must not be null.");
         return mongoTemplate.save(entity);
+    }
+
+    @Override
+    public <S extends T> void update(S entity) {
+        Assert.notNull(entity, "Entity must not be null.");
+        MongoPersistentEntity<?> persistentEntity = mongoTemplate.getConverter().getMappingContext()
+                .getRequiredPersistentEntity(entityClass);
+        MongoPersistentProperty idProperty = persistentEntity.getRequiredIdProperty();
+
+        Object id = persistentEntity.getIdentifierAccessor(entity).getRequiredIdentifier();
+        Update update = MongoEntityUtils.parseUpdate(entity, idProperty.getFieldName());
+
+        mongoTemplate.updateFirst(getByIdQuery(id), update, entityClass);
     }
 
     @Override
@@ -68,11 +84,11 @@ public class BaseServiceImpl<T, ID> implements BaseService<T, ID> {
         return mongoTemplate.count(new Query(), entityClass);
     }
 
-    private Query getByIdQuery(ID id) {
+    private Query getByIdQuery(Object id) {
         return Query.query(Criteria.where("_id").is(id));
     }
 
-    private Query getByIdQuery(Collection<ID> ids) {
+    private Query getByIdQuery(Collection<?> ids) {
         return Query.query(Criteria.where("_id").in(ids));
     }
 }
