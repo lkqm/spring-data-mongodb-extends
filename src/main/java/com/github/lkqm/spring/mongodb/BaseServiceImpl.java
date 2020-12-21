@@ -2,6 +2,7 @@ package com.github.lkqm.spring.mongodb;
 
 import com.mongodb.client.result.DeleteResult;
 import java.lang.reflect.ParameterizedType;
+import java.util.Collection;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -44,13 +45,20 @@ public class BaseServiceImpl<T, ID> implements BaseService<T, ID> {
     }
 
     @Override
+    public long deleteById(Collection<ID> ids) {
+        Assert.notNull(ids, "Ids must not be null.");
+        DeleteResult deleteResult = mongoTemplate.remove(getByIdQuery(ids), entityClass);
+        return deleteResult.getDeletedCount();
+    }
+
+    @Override
     public T findById(ID id) {
         Assert.notNull(id, "Id must not be null.");
         return mongoTemplate.findOne(getByIdQuery(id), entityClass);
     }
 
     @Override
-    public List<T> findById(List<ID> ids) {
+    public List<T> findById(Collection<ID> ids) {
         Assert.notEmpty(ids, "Ids must not be null or empty.");
         return mongoTemplate.find(getByIdQuery(ids), entityClass);
     }
@@ -64,7 +72,7 @@ public class BaseServiceImpl<T, ID> implements BaseService<T, ID> {
         return Query.query(Criteria.where("_id").is(id));
     }
 
-    private Query getByIdQuery(List<ID> id) {
-        return Query.query(Criteria.where("_id").in(id));
+    private Query getByIdQuery(Collection<ID> ids) {
+        return Query.query(Criteria.where("_id").in(ids));
     }
 }

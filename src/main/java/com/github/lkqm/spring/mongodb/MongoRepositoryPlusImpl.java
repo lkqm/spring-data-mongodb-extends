@@ -1,6 +1,5 @@
 package com.github.lkqm.spring.mongodb;
 
-import com.mongodb.client.result.UpdateResult;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -36,7 +35,7 @@ public class MongoRepositoryPlusImpl<T, ID> extends SimpleMongoRepository<T, ID>
     }
 
     @Override
-    public void update(T entity) {
+    public <S extends T> void update(S entity) {
         Object id = entityInformation.getRequiredId(entity);
         Assert.notNull(id, "Id can't be null value.");
 
@@ -46,20 +45,36 @@ public class MongoRepositoryPlusImpl<T, ID> extends SimpleMongoRepository<T, ID>
     }
 
     @Override
-    public UpdateResult update(Query query, T entity) {
+    public <S extends T> void update(Query query, S entity) {
         Update update = resolveUpdate(entity);
-        return update(query, update);
+        update(query, update);
     }
 
     @Override
-    public UpdateResult update(Query query, Update update) {
-        return mongoOperations.updateMulti(query, update, entityInformation.getJavaType());
+    public void update(Query query, Update update) {
+        mongoOperations.updateMulti(query, update, entityInformation.getJavaType());
     }
 
     @Override
     public long count(Query query) {
         return mongoOperations.count(query, entityInformation.getJavaType());
     }
+
+    @Override
+    public List<T> findAll(Query query) {
+        return mongoOperations.find(query, entityInformation.getJavaType());
+    }
+
+    @Override
+    public Page<T> findAll(Query query, Pageable pageable) {
+        long total = mongoOperations.count(query, entityInformation.getJavaType());
+        List<T> list = mongoOperations.find(query.with(pageable), entityInformation.getJavaType());
+        return new PageImpl<T>(list, pageable, total);
+    }
+
+    //-------------------------------------------
+    // supports
+    //-------------------------------------------
 
     private Update resolveUpdate(T entity) {
         String idAttribute = entityInformation.getIdAttribute();
@@ -86,24 +101,9 @@ public class MongoRepositoryPlusImpl<T, ID> extends SimpleMongoRepository<T, ID>
         return update;
     }
 
-    @Override
-    public List<T> findAll(Query query) {
-        return mongoOperations.find(query, entityInformation.getJavaType());
-    }
-
-    @Override
-    public Page<T> findAll(Query query, Pageable pageable) {
-        long total = mongoOperations.count(query, entityInformation.getJavaType());
-        List<T> list = mongoOperations.find(query.with(pageable), entityInformation.getJavaType());
-        return new PageImpl<T>(list, pageable, total);
-    }
-
-    //-------------------------------------------
-    // supports
-    //-------------------------------------------
 
     /**
-     * return persistent field name
+     * returns persistent field name.
      */
     private static String getPersistentFieldName(Field field) {
         org.springframework.data.mongodb.core.mapping.Field fieldNameAnnotation = field
@@ -118,7 +118,7 @@ public class MongoRepositoryPlusImpl<T, ID> extends SimpleMongoRepository<T, ID>
     }
 
     /**
-     * returns persistent fields
+     * returns persistent fields.
      */
     private static List<Field> getPersistentFields(Class<?> clazz) {
         List<Field> fields = getAllPropertyFields(clazz);

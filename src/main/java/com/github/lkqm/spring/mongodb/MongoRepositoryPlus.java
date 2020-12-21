@@ -1,6 +1,5 @@
 package com.github.lkqm.spring.mongodb;
 
-import com.mongodb.client.result.UpdateResult;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,11 +14,19 @@ import org.springframework.data.repository.NoRepositoryBean;
 @NoRepositoryBean
 public interface MongoRepositoryPlus<T, ID> extends MongoRepository<T, ID> {
 
-    void update(T entity);
+    /**
+     * Updates the entity ignore null value fields by its id.
+     * <p>
+     * Notes: entity id value must not be null.
+     */
+    <S extends T> void update(S entity);
 
-    UpdateResult update(Query query, T entity);
+    /**
+     * Updates the entity ignore null value fields by specific query.
+     */
+    <S extends T> void update(Query query, S entity);
 
-    UpdateResult update(Query query, Update update);
+    void update(Query query, Update update);
 
     long count(Query query);
 
