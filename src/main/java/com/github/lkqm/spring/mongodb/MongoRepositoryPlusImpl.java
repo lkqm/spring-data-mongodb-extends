@@ -33,13 +33,13 @@ public class MongoRepositoryPlusImpl<T, ID> extends SimpleMongoRepository<T, ID>
         Assert.notNull(id, "Id can't be null value.");
 
         Query query = new Query(Criteria.where("_id").is(id));
-        Update update = MongoEntityUtils.parseUpdate(entity, entityInformation.getIdAttribute());
+        Update update = MongoUtils.parseUpdate(entity, entityInformation.getIdAttribute());
         mongoOperations.updateFirst(query, update, entityInformation.getJavaType());
     }
 
     @Override
     public <S extends T> void update(Query query, S entity) {
-        Update update = MongoEntityUtils.parseUpdate(entity, entityInformation.getIdAttribute());
+        Update update = MongoUtils.parseUpdate(entity, entityInformation.getIdAttribute());
         mongoOperations.updateMulti(query, update, entityInformation.getJavaType());
     }
 

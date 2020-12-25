@@ -48,7 +48,7 @@ public class BaseServiceImpl<T, ID> implements BaseService<T, ID> {
         MongoPersistentProperty idProperty = persistentEntity.getRequiredIdProperty();
 
         Object id = persistentEntity.getIdentifierAccessor(entity).getRequiredIdentifier();
-        Update update = MongoEntityUtils.parseUpdate(entity, idProperty.getFieldName());
+        Update update = MongoUtils.parseUpdate(entity, idProperty.getFieldName());
 
         mongoTemplate.updateFirst(getByIdQuery(id), update, entityClass);
     }
