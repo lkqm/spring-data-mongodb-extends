@@ -2,6 +2,7 @@ package com.github.lkqm.spring.mongodb;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * CRUD operations for specific type.
@@ -40,6 +41,11 @@ public interface BaseService<T, ID> {
      * Retrieves an entity by its id.
      */
     List<T> findById(Collection<ID> ids);
+
+    /**
+     * Retrieves an entity by its id.
+     */
+    List<Map<ID, T>> findByIdMap(Collection<ID> ids);
 
     /**
      * Returns the number of entities available.

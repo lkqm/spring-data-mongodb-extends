@@ -2,8 +2,11 @@ package com.github.lkqm.spring.mongodb;
 
 import com.mongodb.client.result.DeleteResult;
 import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.mapping.MongoPersistentEntity;
@@ -77,6 +80,25 @@ public class BaseServiceImpl<T, ID> implements BaseService<T, ID> {
     public List<T> findById(Collection<ID> ids) {
         Assert.notEmpty(ids, "Ids must not be null or empty.");
         return mongoTemplate.find(getByIdQuery(ids), entityClass);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<Map<ID, T>> findByIdMap(Collection<ID> ids) {
+        List<T> data = this.findById(ids);
+
+        MongoPersistentEntity<?> persistentEntity = mongoTemplate.getConverter().getMappingContext()
+                .getRequiredPersistentEntity(entityClass);
+        MongoPersistentProperty idProperty = persistentEntity.getRequiredIdProperty();
+
+        List<Map<ID, T>> maps = new ArrayList<>(data.size());
+        for (T entity : data) {
+            ID id = (ID) persistentEntity.getIdentifierAccessor(entity).getIdentifier();
+            Map<ID, T> map = new HashMap<>();
+            map.put(id, entity);
+            maps.add(map);
+        }
+        return maps;
     }
 
     @Override
