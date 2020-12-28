@@ -1,5 +1,8 @@
 package com.github.lkqm.spring.mongodb;
 
+import static com.github.lkqm.spring.mongodb.ReadPreference.PRIMARY;
+import static com.github.lkqm.spring.mongodb.ReadPreference.SECONDARY;
+
 /**
  * Holder mongo read preferences.
  *
@@ -9,6 +12,9 @@ package com.github.lkqm.spring.mongodb;
 public class PrimarySecondaryMongoReadHolder {
 
     private static final ThreadLocal<ReadPreference> holder = new ThreadLocal<>();
+
+    private PrimarySecondaryMongoReadHolder() {
+    }
 
     /**
      * Returns current read preference from which mongo client.
@@ -21,14 +27,14 @@ public class PrimarySecondaryMongoReadHolder {
      * Set read data from primary mongo client.
      */
     public static void setPrimary() {
-        set(ReadPreference.PRIMARY);
+        set(PRIMARY);
     }
 
     /**
      * Set read data from secondary mongo client.
      */
     public static void setSecondary() {
-        set(ReadPreference.PRIMARY);
+        set(SECONDARY);
     }
 
     /**

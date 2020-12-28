@@ -35,6 +35,13 @@ public class PrimarySecondaryMongoClientDbFactory extends SimpleMongoClientDbFac
 
     @Override
     protected MongoClient getMongoClient() {
+        ReadPreference readPreference = PrimarySecondaryMongoReadHolder.getReadPreference();
+        if (readPreference == ReadPreference.PRIMARY) {
+            return super.getMongoClient();
+        } else if (readPreference == ReadPreference.SECONDARY && mongoClientSecondaryPreferred != null) {
+            return mongoClientSecondaryPreferred;
+        }
+
         if (mongoClientSecondaryPreferred != null) {
             try {
                 TransactionAspectSupport.currentTransactionStatus();
