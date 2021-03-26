@@ -45,11 +45,6 @@ public interface BaseService<T, ID> {
     /**
      * Retrieves an entity by its id.
      */
-    List<Map<ID, T>> findByIdMap(Collection<ID> ids);
-
-    /**
-     * Returns the number of entities available.
-     */
-    long count();
+    Map<ID, T> findByIdMap(Collection<ID> ids);
 
 }

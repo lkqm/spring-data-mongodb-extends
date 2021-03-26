@@ -1,15 +1,8 @@
 package com.github.lkqm.spring.mongodb;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import com.github.lkqm.spring.mongodb.integration.AdminUser;
 import com.github.lkqm.spring.mongodb.integration.User;
 import com.github.lkqm.spring.mongodb.integration.UserServiceImpl;
-import java.util.Collections;
-import java.util.List;
-import javax.annotation.Resource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,6 +11,13 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import javax.annotation.Resource;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @DataMongoTest
 @ExtendWith(SpringExtension.class)
@@ -97,7 +97,7 @@ class BaseServiceImplTest {
     }
 
     @Test
-    void findByIds() {
+    void findById2() {
         List<String> ids = Collections.singletonList(user.getId());
         List<User> data = userService.findById(ids);
         assertTrue(data != null && data.size() == 1);
@@ -105,10 +105,11 @@ class BaseServiceImplTest {
     }
 
     @Test
-    void count() {
-        long count = userService.count();
-        assertTrue(count > 0);
+    void findByIdMap() {
+        List<String> ids = Collections.singletonList(user.getId());
+        Map<String, User> data = userService.findByIdMap(ids);
+        assertTrue(data != null && data.size() == 1);
+        assertEquals(user, data.get(user.getId()));
     }
-
 
 }

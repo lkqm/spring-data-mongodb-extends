@@ -1,49 +1,17 @@
 package com.github.lkqm.spring.mongodb;
 
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.util.ClassUtils;
+
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.mongodb.core.query.Update;
-import org.springframework.util.ClassUtils;
 
 public class MongoUtils {
-
-    /**
-     * Convert uri to readPreference=SecondaryPreferred if replicaSet cluster.
-     *
-     * @param uri
-     * @return return null if not replicaSet cluster uri.
-     */
-    public static String parseSecondaryPreferredUri(String uri) {
-        String uriSecondary = null;
-        if (uri.contains("replicaSet")) {
-            // 自己初始化mongoTemplate,指向从库,不支持事务
-            if (uri.contains("readPreference")) {
-                String[] uriArray = uri.split("&");
-
-                String value = null;
-                for (String u : uriArray) {
-                    if (u.contains("readPreference")) {
-                        String[] a = u.split("=");
-                        if (a.length > 1) {
-                            value = a[1];
-                        }
-                        break;
-                    }
-                }
-                if (value != null) {
-                    uriSecondary = uri.replace(value, "secondaryPreferred");
-                }
-            } else {
-                uriSecondary = uri + "&readPreference=secondaryPreferred";
-            }
-        }
-        return uriSecondary;
-    }
 
     /**
      * Returns update statement by specific entity that ignore null value.
