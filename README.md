@@ -7,7 +7,7 @@ Useful spring-data-mongodb extends, such as partial update method, generic crud 
 <dependency>
     <groupId>com.github.lkqm</groupId>
     <artifactId>spring-data-mongodb-extends</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.3</version>
 </dependency>
 ```
 
