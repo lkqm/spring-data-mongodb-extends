@@ -7,7 +7,7 @@ Useful spring-data-mongodb extends, such as partial update method, generic crud 
 <dependency>
     <groupId>com.github.lkqm</groupId>
     <artifactId>spring-data-mongodb-extends</artifactId>
-    <version>0.0.3</version>
+    <version>0.1.0</version>
 </dependency>
 ```
 
@@ -31,8 +31,10 @@ count()
 update(entity)
 update(query, entity)
 count(query)
+findOne(query)
 findAll(query)
 findAll(query, pageable)
+mongoOperations()
 ```
 
 ## How to use?
@@ -49,7 +51,13 @@ public class Main {
 }
 
 // 2. Implements MongoRepositoryPlus
-public interface UserRepository extends MongoRepositoryPlus {}
+public interface UserRepository extends MongoRepositoryPlus {
+    /*
+    default List<User> listUsers() {
+        mongoOperations().findAll();
+    }
+    */
+}
 
 // 3. Use repository
 userRepository.update(user);

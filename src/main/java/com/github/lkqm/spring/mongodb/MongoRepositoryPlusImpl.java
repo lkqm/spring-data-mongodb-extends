@@ -27,6 +27,10 @@ public class MongoRepositoryPlusImpl<T, ID> extends SimpleMongoRepository<T, ID>
         this.entityInformation = metadata;
     }
 
+    public MongoOperations mongoOperations() {
+        return mongoOperations;
+    }
+
     @Override
     public <S extends T> void update(S entity) {
         Object id = entityInformation.getRequiredId(entity);
@@ -46,6 +50,11 @@ public class MongoRepositoryPlusImpl<T, ID> extends SimpleMongoRepository<T, ID>
     @Override
     public long count(Query query) {
         return mongoOperations.count(query, entityInformation.getJavaType());
+    }
+
+    @Override
+    public T findOne(Query query) {
+        return mongoOperations.findOne(query, entityInformation.getJavaType());
     }
 
     @Override
