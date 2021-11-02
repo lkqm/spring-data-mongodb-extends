@@ -54,7 +54,7 @@ public class Main {
 public interface UserRepository extends MongoRepositoryPlus {
     /*
     default List<User> listUsers() {
-        mongoOperations().findAll();
+        return mongoOperations().findAll();
     }
     */
 }
